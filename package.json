@@ -1,0 +1,20 @@
+{
+  "author": "Khyber Sen and Anish Shenoy",
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "webpack": "^3.10.0"
+  },
+  "description": "Bouncing Balls",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kkysen/BouncingBalls.git"
+  },
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "start": "webpack-dev-server --hot --inline --no-info"
+  }
+}
