@@ -1,7 +1,7 @@
 import {CanvasCanvas} from "./canvasCanvas";
 import {Listener} from "./listener";
 import {Canvas, CanvasConstructor} from "./svgCanvas";
-import {MathUtils} from "./utils";
+import {MathUtils, queryParams} from "./utils";
 import {Ball} from "./ball";
 import {Game, GameAction, GameRenderer, GameUpdater, Vector} from "./game";
 
@@ -79,14 +79,14 @@ export const BouncingBall = {
         const radius: number = +options.radius();
         
         const dist2 = function(ball1: Ball, ball2: Ball) {
-            "use asm";
+            // "use asm";
             const dx: number = +ball1.x - +ball2.x;
             const dy: number = +ball1.y - +ball2.y;
             return dx * dx + dy * dy;
         };
         
         const collide: GameUpdater = function(game: BouncingBallsGame): void {
-            "use asm";
+            // "use asm";
             const balls: BouncingBall[] = game.balls;
             for (let i = ball.ballId | 0; i < (balls.length | 0); i++) {
                 const otherBall: BouncingBall = balls[i];
@@ -99,7 +99,7 @@ export const BouncingBall = {
         };
         
         const move: GameUpdater = function(game: Game): void {
-            "use asm";
+            // "use asm";
             const canvas: Canvas = game.canvas;
             const width: number = +canvas.width;
             const height: number = +canvas.height;
@@ -238,7 +238,9 @@ interface BouncingBallsGameClass {
     // noinspection ReservedWordAsName
     new: (options: BouncingBallsGameOptions) => BouncingBallsGame;
     
-    default(): BouncingBallsGame;
+    default(numBalls?: number): BouncingBallsGame;
+    
+    main(): void,
     
 }
 
@@ -271,41 +273,43 @@ export const BouncingBallsGame: BouncingBallsGameClass = {
             });
         };
         
-        const balls: BouncingBall[] = new Array(options.numBalls)
-            .fill(null)
-            .map((e: null, i: number) => newBall(i));
-        (<any> game).balls = balls;
-        balls.forEach(game.addActor);
-        balls.forEach(ball => {
-            // override remove()
+        const overrideRemove = function(ball: BouncingBall): void {
             const superRemove = ball.remove;
             (<any> ball).remove = function() {
                 superRemove();
                 const id: number = ball.ballId;
                 const movedBall: BouncingBall = balls.pop();
-                if (id !== balls.length - 1) {
+                if (id !== balls.length) {
                     balls[id] = movedBall;
                 }
                 (<any> movedBall).ballId = id;
                 (<any> ball).ballId = null;
             };
-        });
+        };
+        
+        const balls: BouncingBall[] = new Array(options.numBalls)
+            .fill(null)
+            .map((e: null, i: number) => newBall(i));
+        (<any> game).balls = balls;
+        balls.forEach(game.addActor);
+        balls.forEach(overrideRemove);
         
         (<any> game).addBall = Listener.new(() => {
             console.log("adding ball");
             const ball: BouncingBall = newBall(balls.length);
             game.addActor(ball);
+            overrideRemove(ball);
             balls.push(ball);
         });
         game.addBall.click(game.canvas);
         
         const superReset: GameAction = game.reset;
         (<any> game).reset = GameAction.new(() => {
-            superReset();
-            console.log(balls.slice(options.numBalls, balls.length));
+            // console.log(balls.slice(options.numBalls, balls.length));
             balls.slice(options.numBalls, balls.length)
                 .reverse() // remove from back
                 .forEach(ball => ball.remove());
+            superReset();
         });
         
         game.canvas.appendTo(canvasDiv);
@@ -318,7 +322,7 @@ export const BouncingBallsGame: BouncingBallsGameClass = {
         return <BouncingBallsGame> game;
     },
     
-    default(): BouncingBallsGame {
+    default(numBalls?: number): BouncingBallsGame {
         
         const radius: number = 10;
         
@@ -340,11 +344,19 @@ export const BouncingBallsGame: BouncingBallsGameClass = {
             name: "Bouncing Balls",
             parent: document.body.appendNewElement("div"),
             gameSize: size,
-            numBalls: 10,
+            numBalls: numBalls || 10,
             ballRadius: () => radius,
             ballPosition: randomVector.bind(null, size, radius),
             ballVelocity: () => velocity(10, Math.random() * MathUtils.TAU),
         });
+    },
+    
+    main() {
+        let numBalls: number = parseInt(queryParams().get("numBalls"));
+        if (!numBalls || numBalls < 0) {
+            numBalls = undefined;
+        }
+        BouncingBallsGame.default(numBalls).start();
     },
     
 }.freeze();

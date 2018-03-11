@@ -185,7 +185,6 @@ export const Game = {
             
             addActor(actor: Actor): void {
                 actor.reset(game);
-                actors.push(actor);
                 
                 const privateActor: PrivateActor = <PrivateActor> actor;
                 privateActor.game = game;
@@ -193,6 +192,8 @@ export const Game = {
                 privateActor.remove = function() {
                     removeActor(actor);
                 };
+                
+                actors.push(actor);
             },
             
         };
@@ -200,7 +201,7 @@ export const Game = {
         const removeActor = function(actor: Actor): void {
             const id: number = actor.actorId;
             const movedActor: Actor = actors.pop();
-            if (id !== actors.length - 1) {
+            if (id !== actors.length) {
                 actors[id] = movedActor;
             }
             const privateActor: PrivateActor = <PrivateActor> actor;
