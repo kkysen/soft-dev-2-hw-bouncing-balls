@@ -78,7 +78,7 @@ interface SVGSVGPlusElement extends SVGSVGElement {
     
 }
 
-export interface Canvas {
+export interface Canvas extends EventTarget {
     
     readonly parentElement: HTMLElement | null;
     
@@ -91,9 +91,13 @@ export interface Canvas {
     
     appendChild<T extends Node>(element: T): T;
     
-    addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLDivElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+    addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLDivElement,
+                                                                              ev: HTMLElementEventMap[K]) => any,
+                                                          options?: boolean | AddEventListenerOptions): void;
     
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+    removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLDivElement,
+                                                                                 ev: HTMLElementEventMap[K]) => any,
+                                                             options?: boolean | AddEventListenerOptions): void;
     
     fillStyle: string;
     strokeStyle: string;
@@ -131,9 +135,9 @@ export interface CanvasConstructor {
     
 }
 
-export const SVGCanvas: { new: CanvasConstructor } = {
+export const SVGCanvas: {new: CanvasConstructor} = {
     
-    new: function(): SVGCanvas {
+    new(): SVGCanvas {
         
         const svgCreate: SVGConstructor = document.createElementNS.bind(document, "http://www.w3.org/2000/svg");
         
@@ -149,7 +153,7 @@ export const SVGCanvas: { new: CanvasConstructor } = {
             x: 0,
             y: 0,
             invalid: true,
-            set: function(x: number, y: number) {
+            set(x: number, y: number) {
                 this.x = x;
                 this.y = y;
                 this.invalid = false;
@@ -178,11 +182,11 @@ export const SVGCanvas: { new: CanvasConstructor } = {
             get parentElement(): HTMLElement | null {
                 return svg.parentElement;
             },
-    
+            
             get width(): number {
                 return parseInt(svg.getAttribute("width"));
             },
-    
+            
             set width(width: number) {
                 svg.setAttribute("width", width.toString());
             },
@@ -199,17 +203,25 @@ export const SVGCanvas: { new: CanvasConstructor } = {
                 return svg.style;
             },
             
-            appendTo: function(element: Node): SVGCanvas {
+            appendTo(element: Node): SVGCanvas {
                 element.appendChild(svg);
                 return this;
             },
             
-            appendChild: function <T extends Node>(element: T): T {
+            appendChild<T extends Node>(element: T): T {
                 return svg.appendChild(element);
             },
             
-            addEventListener: function(eventType, listener, optionsOrUseCapture): void {
+            addEventListener(eventType: string, listener, optionsOrUseCapture): void {
                 svg.addEventListener(eventType, listener, optionsOrUseCapture);
+            },
+            
+            removeEventListener(eventType: string, listener, optionsOrUseCapture): void {
+                svg.removeEventListener(eventType, listener, optionsOrUseCapture);
+            },
+            
+            dispatchEvent(event: Event): boolean {
+                return svg.dispatchEvent(event);
             },
             
             set fillStyle(fill: string) {
@@ -220,12 +232,12 @@ export const SVGCanvas: { new: CanvasConstructor } = {
                 strokeStyle = stroke;
             },
             
-            clear: function(): void {
+            clear(): void {
                 svg.clearHTML();
                 p.invalid = true;
             },
             
-            fillRect: function(x: number, y: number, width: number, height: number,
+            fillRect(x: number, y: number, width: number, height: number,
                                fill: string = fillStyle): void {
                 svg.newChild("rect").setAttributes({
                     x: x,
@@ -237,13 +249,13 @@ export const SVGCanvas: { new: CanvasConstructor } = {
                 p.set(x, y);
             },
             
-            fillRectCentered: function(x: number, y: number, width: number, height: number,
+            fillRectCentered(x: number, y: number, width: number, height: number,
                                        fill: string = fillStyle): void {
                 this.fillRect(x - width * 0.5, y - height * 0.5, width, height, fill);
                 p.set(x, y);
             },
             
-            fillCircle: function(x: number, y: number, radius: number,
+            fillCircle(x: number, y: number, radius: number,
                                  fill: string = fillStyle, stroke: string = strokeStyle): void {
                 svg.newChild("circle").setAttributes({
                     cx: x,
@@ -268,11 +280,11 @@ export const SVGCanvas: { new: CanvasConstructor } = {
                 p.set(x, y);
             },
             
-            moveTo: function(x: number, y: number): void {
+            moveTo(x: number, y: number): void {
                 p.set(x, y);
             },
             
-            line: function(x1: number, y1: number, x2: number, y2: number, stroke: string = strokeStyle): void {
+            line(x1: number, y1: number, x2: number, y2: number, stroke: string = strokeStyle): void {
                 svg.newChild("line").setAttributes({
                     x1: x1,
                     y1: y1,
@@ -283,7 +295,7 @@ export const SVGCanvas: { new: CanvasConstructor } = {
                 p.set(x2, y2);
             },
             
-            lineTo: function(x: number, y: number, stroke: string = strokeStyle): void {
+            lineTo(x: number, y: number, stroke: string = strokeStyle): void {
                 if (p.invalid === true) {
                     return;
                 }

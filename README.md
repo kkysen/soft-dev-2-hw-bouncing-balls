@@ -3,7 +3,7 @@
 
 ### To Run
 
-Open `animation.html` in a browser.
+Open `bouncingBalls.html` in a browser.
 
 
 ### To Build

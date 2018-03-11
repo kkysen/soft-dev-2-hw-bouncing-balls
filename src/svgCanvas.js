@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SVGCanvas = {
-    new: function () {
+    new() {
         const svgCreate = document.createElementNS.bind(document, "http://www.w3.org/2000/svg");
         const svg = svgCreate("svg");
         svg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
@@ -13,7 +13,7 @@ exports.SVGCanvas = {
             x: 0,
             y: 0,
             invalid: true,
-            set: function (x, y) {
+            set(x, y) {
                 this.x = x;
                 this.y = y;
                 this.invalid = false;
@@ -53,15 +53,21 @@ exports.SVGCanvas = {
             get style() {
                 return svg.style;
             },
-            appendTo: function (element) {
+            appendTo(element) {
                 element.appendChild(svg);
                 return this;
             },
-            appendChild: function (element) {
+            appendChild(element) {
                 return svg.appendChild(element);
             },
-            addEventListener: function (eventType, listener, optionsOrUseCapture) {
+            addEventListener(eventType, listener, optionsOrUseCapture) {
                 svg.addEventListener(eventType, listener, optionsOrUseCapture);
+            },
+            removeEventListener(eventType, listener, optionsOrUseCapture) {
+                svg.removeEventListener(eventType, listener, optionsOrUseCapture);
+            },
+            dispatchEvent(event) {
+                return svg.dispatchEvent(event);
             },
             set fillStyle(fill) {
                 fillStyle = fill;
@@ -69,11 +75,11 @@ exports.SVGCanvas = {
             set strokeStyle(stroke) {
                 strokeStyle = stroke;
             },
-            clear: function () {
+            clear() {
                 svg.clearHTML();
                 p.invalid = true;
             },
-            fillRect: function (x, y, width, height, fill = fillStyle) {
+            fillRect(x, y, width, height, fill = fillStyle) {
                 svg.newChild("rect").setAttributes({
                     x: x,
                     y: y,
@@ -83,11 +89,11 @@ exports.SVGCanvas = {
                 });
                 p.set(x, y);
             },
-            fillRectCentered: function (x, y, width, height, fill = fillStyle) {
+            fillRectCentered(x, y, width, height, fill = fillStyle) {
                 this.fillRect(x - width * 0.5, y - height * 0.5, width, height, fill);
                 p.set(x, y);
             },
-            fillCircle: function (x, y, radius, fill = fillStyle, stroke = strokeStyle) {
+            fillCircle(x, y, radius, fill = fillStyle, stroke = strokeStyle) {
                 svg.newChild("circle").setAttributes({
                     cx: x,
                     cy: y,
@@ -108,10 +114,10 @@ exports.SVGCanvas = {
                 });
                 p.set(x, y);
             },
-            moveTo: function (x, y) {
+            moveTo(x, y) {
                 p.set(x, y);
             },
-            line: function (x1, y1, x2, y2, stroke = strokeStyle) {
+            line(x1, y1, x2, y2, stroke = strokeStyle) {
                 svg.newChild("line").setAttributes({
                     x1: x1,
                     y1: y1,
@@ -121,7 +127,7 @@ exports.SVGCanvas = {
                 });
                 p.set(x2, y2);
             },
-            lineTo: function (x, y, stroke = strokeStyle) {
+            lineTo(x, y, stroke = strokeStyle) {
                 if (p.invalid === true) {
                     return;
                 }

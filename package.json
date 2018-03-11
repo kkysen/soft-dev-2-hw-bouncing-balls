@@ -1,10 +1,12 @@
 {
   "author": "Khyber Sen and Anish Shenoy",
   "dependencies": {
-
+    "ts-loader": "^4.0.1",
+    "typescript": "^2.7.2"
   },
   "devDependencies": {
-    "webpack": "^3.10.0"
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.11"
   },
   "description": "Bouncing Balls",
   "license": "MIT",

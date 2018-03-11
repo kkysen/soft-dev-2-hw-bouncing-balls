@@ -4,19 +4,19 @@ export const MathUtils = {
     
     TAU: 2 * Math.PI,
     
-    rad2deg: function(radians: number): number {
+    rad2deg(radians: number): number {
         return radians * 180 / Math.PI;
     },
     
-    deg2rad: function(degrees: number): number {
+    deg2rad(degrees: number): number {
         return degrees * Math.PI / 180;
     },
     
-    randomRange: function(min: number, max: number): number {
+    randomRange(min: number, max: number): number {
         return Math.random() * (max - min) + min;
     },
     
-    angleToString: function(angle: number): string {
+    angleToString(angle: number): string {
         if (angle < 0) {
             angle += MathUtils.TAU;
         }

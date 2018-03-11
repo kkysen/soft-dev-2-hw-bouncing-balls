@@ -1,3 +1,21 @@
+Object.defineProperties(Object.prototype, {
+    freeze: {
+        writable: false,
+        enumerable: false,
+        configurable: false,
+        value: function () {
+            return Object.freeze(this);
+        },
+    },
+    seal: {
+        writable: false,
+        enumerable: false,
+        configurable: false,
+        value() {
+            return Object.seal(this);
+        },
+    },
+});
 Element.prototype.clearHTML = function () {
     this.innerHTML = "";
 };

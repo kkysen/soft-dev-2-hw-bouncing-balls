@@ -1,4 +1,57 @@
+declare interface Object {
+    
+    freeze<T>(this: T): T;
+    
+    seal<T>(this: T): T;
+    
+    clone<T>(this: T): T;
+    
+}
 
+declare interface ObjectConstructor {
+    
+    defineSharedProperties(object: any, sharedDescriptor: PropertyDescriptor, propertyValues: Object);
+    
+}
+
+Object.defineProperties(Object, {
+    
+    defineSharedProperties: {
+        writable: false,
+        enumerable: false,
+        configurable: false,
+        value(obj: any, sharedDescriptor: PropertyDescriptor, propertyValues: Object) {
+            const properties: PropertyDescriptorMap & ThisType<any> = {};
+            for (const value in propertyValues) {
+                if (propertyValues.hasOwnProperty(value)) {
+                    properties[value] = Object.assign({value: propertyValues[value]}, sharedDescriptor);
+                }
+            }
+            Object.defineProperties(obj, properties);
+        },
+    },
+    
+});
+
+Object.defineSharedProperties(Object.prototype, {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+}, {
+    
+    freeze() {
+        return Object.freeze(this);
+    },
+    
+    seal() {
+        return Object.seal(this);
+    },
+    
+    clone() {
+        return Object.assign({}, this);
+    },
+    
+});
 
 declare interface Element {
     

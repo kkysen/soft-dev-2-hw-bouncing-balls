@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
 exports.CanvasCanvas = {
-    new: function () {
+    new() {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
         const canvasCanvas = {
@@ -24,15 +24,21 @@ exports.CanvasCanvas = {
             get style() {
                 return canvas.style;
             },
-            appendTo: function (element) {
+            appendTo(element) {
                 element.appendChild(canvas);
                 return this;
             },
-            appendChild: function (element) {
+            appendChild(element) {
                 return canvas.appendChild(element);
             },
-            addEventListener: function (eventType, listener, optionsOrUseCapture) {
+            addEventListener(eventType, listener, optionsOrUseCapture) {
                 canvas.addEventListener(eventType, listener, optionsOrUseCapture);
+            },
+            removeEventListener(eventType, listener, optionsOrUseCapture) {
+                canvas.removeEventListener(eventType, listener, optionsOrUseCapture);
+            },
+            dispatchEvent(event) {
+                return canvas.dispatchEvent(event);
             },
             set fillStyle(fillStyle) {
                 context.fillStyle = fillStyle;
@@ -40,10 +46,10 @@ exports.CanvasCanvas = {
             set strokeStyle(strokeStyle) {
                 context.strokeStyle = strokeStyle;
             },
-            clear: function () {
+            clear() {
                 context.clearRect(0, 0, canvas.width, canvas.height);
             },
-            fillRect: function (x, y, width, height, fillStyle) {
+            fillRect(x, y, width, height, fillStyle) {
                 let oldFillStyle;
                 if (fillStyle) {
                     oldFillStyle = context.fillStyle;
@@ -54,11 +60,11 @@ exports.CanvasCanvas = {
                     context.fillStyle = oldFillStyle;
                 }
             },
-            fillRectCentered: function (x, y, width, height, fillStyle) {
+            fillRectCentered(x, y, width, height, fillStyle) {
                 this.fillRect(x - width * 0.5, y - height * 0.5, width, height, fillStyle);
                 context.moveTo(x, y);
             },
-            fillCircle: function (x, y, radius, fillStyle, strokeStyle) {
+            fillCircle(x, y, radius, fillStyle, strokeStyle) {
                 this.fillEllipse(x, y, radius, radius, fillStyle, strokeStyle);
             },
             fillEllipse(x, y, radiusX, radiusY, fillStyle, strokeStyle) {
@@ -84,10 +90,10 @@ exports.CanvasCanvas = {
                 }
                 context.moveTo(x, y);
             },
-            moveTo: function (x, y) {
+            moveTo(x, y) {
                 context.moveTo(x, y);
             },
-            line: function (x1, y1, x2, y2, strokeStyle) {
+            line(x1, y1, x2, y2, strokeStyle) {
                 let oldStrokeStyle;
                 if (strokeStyle) {
                     oldStrokeStyle = context.strokeStyle;
@@ -99,7 +105,7 @@ exports.CanvasCanvas = {
                     context.strokeStyle = oldStrokeStyle;
                 }
             },
-            lineTo: function (x, y, strokeStyle) {
+            lineTo(x, y, strokeStyle) {
                 let oldStrokeStyle;
                 if (strokeStyle) {
                     oldStrokeStyle = context.strokeStyle;

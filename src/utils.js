@@ -2,16 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MathUtils = {
     TAU: 2 * Math.PI,
-    rad2deg: function (radians) {
+    rad2deg(radians) {
         return radians * 180 / Math.PI;
     },
-    deg2rad: function (degrees) {
+    deg2rad(degrees) {
         return degrees * Math.PI / 180;
     },
-    randomRange: function (min, max) {
+    randomRange(min, max) {
         return Math.random() * (max - min) + min;
     },
-    angleToString: function (angle) {
+    angleToString(angle) {
         if (angle < 0) {
             angle += exports.MathUtils.TAU;
         }

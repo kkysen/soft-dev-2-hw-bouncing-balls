@@ -7,7 +7,7 @@ export interface CanvasCanvas extends Canvas {
 
 export const CanvasCanvas: { new: CanvasConstructor } = {
     
-    new: function(): CanvasCanvas {
+    new(): CanvasCanvas {
         
         const canvas: HTMLCanvasElement = document.createElement("canvas");
         const context: CanvasRenderingContext2D = canvas.getContext("2d");
@@ -38,17 +38,25 @@ export const CanvasCanvas: { new: CanvasConstructor } = {
                 return canvas.style;
             },
             
-            appendTo: function(element: Node): CanvasCanvas {
+            appendTo(element: Node): CanvasCanvas {
                 element.appendChild(canvas);
                 return this;
             },
             
-            appendChild: function <T extends Node>(element: T): T {
+            appendChild<T extends Node>(element: T): T {
                 return canvas.appendChild(element);
             },
             
-            addEventListener: function(eventType, listener, optionsOrUseCapture): void {
+            addEventListener(eventType: string, listener, optionsOrUseCapture): void {
                 canvas.addEventListener(eventType, listener, optionsOrUseCapture);
+            },
+    
+            removeEventListener(eventType: string, listener, optionsOrUseCapture): void {
+                canvas.removeEventListener(eventType, listener, optionsOrUseCapture);
+            },
+    
+            dispatchEvent(event: Event): boolean {
+                return canvas.dispatchEvent(event);
             },
             
             set fillStyle(fillStyle: string) {
@@ -59,11 +67,11 @@ export const CanvasCanvas: { new: CanvasConstructor } = {
                 context.strokeStyle = strokeStyle;
             },
             
-            clear: function(): void {
+            clear(): void {
                 context.clearRect(0, 0, canvas.width, canvas.height);
             },
             
-            fillRect: function(x: number, y: number, width: number, height: number,
+            fillRect(x: number, y: number, width: number, height: number,
                                fillStyle?: string): void {
                 let oldFillStyle: string | CanvasGradient | CanvasPattern;
                 if (fillStyle) {
@@ -76,13 +84,13 @@ export const CanvasCanvas: { new: CanvasConstructor } = {
                 }
             },
             
-            fillRectCentered: function(x: number, y: number, width: number, height: number,
+            fillRectCentered(x: number, y: number, width: number, height: number,
                                        fillStyle?: string): void {
                 this.fillRect(x - width * 0.5, y - height * 0.5, width, height, fillStyle);
                 context.moveTo(x, y);
             },
             
-            fillCircle: function(x: number, y: number, radius: number,
+            fillCircle(x: number, y: number, radius: number,
                                  fillStyle?: string, strokeStyle?: string): void {
                 this.fillEllipse(x, y, radius, radius, fillStyle, strokeStyle);
             },
@@ -112,11 +120,11 @@ export const CanvasCanvas: { new: CanvasConstructor } = {
                 context.moveTo(x, y);
             },
             
-            moveTo: function(x: number, y: number): void {
+            moveTo(x: number, y: number): void {
                 context.moveTo(x, y);
             },
             
-            line: function(x1: number, y1: number, x2: number, y2: number, strokeStyle?: string): void {
+            line(x1: number, y1: number, x2: number, y2: number, strokeStyle?: string): void {
                 let oldStrokeStyle: string | CanvasGradient | CanvasPattern;
                 if (strokeStyle) {
                     oldStrokeStyle = context.strokeStyle;
@@ -129,7 +137,7 @@ export const CanvasCanvas: { new: CanvasConstructor } = {
                 }
             },
             
-            lineTo: function(x: number, y: number, strokeStyle?: string): void {
+            lineTo(x: number, y: number, strokeStyle?: string): void {
                 let oldStrokeStyle: string | CanvasGradient | CanvasPattern;
                 if (strokeStyle) {
                     oldStrokeStyle = context.strokeStyle;
