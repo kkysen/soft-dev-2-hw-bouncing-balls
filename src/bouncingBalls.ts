@@ -248,7 +248,7 @@ export const BouncingBallsGame: BouncingBallsGameClass = {
     
     new(options: BouncingBallsGameOptions): BouncingBallsGame {
         
-        options = options.clone();
+        options = options._clone();
         
         const parent: HTMLElement = options.parent.appendNewElement("center");
         

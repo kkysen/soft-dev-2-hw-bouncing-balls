@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const listener_1 = require("./listener");
-const GameAction = {
+exports.GameAction = {
     new(action) {
         const gameAction = action;
         gameAction.listener = listener_1.Listener.new(action);
@@ -30,25 +30,25 @@ exports.Game = {
             clear() {
                 canvas.clear();
             },
-            start: GameAction.new(() => {
+            start: exports.GameAction.new(() => {
                 resume(true);
                 frame.paused = false;
                 frame.running = true;
             }),
-            stop: GameAction.new(() => {
+            stop: exports.GameAction.new(() => {
                 window.cancelAnimationFrame(game.prevId);
                 frame.prevId = null;
                 frame.time = null;
                 frame.paused = true;
             }),
-            resume: GameAction.new(() => {
+            resume: exports.GameAction.new(() => {
                 resume(false);
                 frame.paused = false;
             }),
-            reset: GameAction.new(() => {
+            reset: exports.GameAction.new(() => {
                 actors.forEach(actor => actor.reset(game));
             }),
-            restart: GameAction.new(() => {
+            restart: exports.GameAction.new(() => {
                 game.stop();
                 game.reset();
                 game.start();
@@ -57,22 +57,25 @@ exports.Game = {
             paused: false,
             actors: actors,
             addActor(actor) {
-                actors.push(actor);
+                actor.reset(game);
                 const privateActor = actor;
                 privateActor.game = game;
                 privateActor.actorId = actors.length;
                 privateActor.remove = function () {
                     removeActor(actor);
                 };
+                actors.push(actor);
             },
         };
         const removeActor = function (actor) {
             const id = actor.actorId;
-            actors[id] = actors.pop();
+            const movedActor = actors.pop();
+            if (id !== actors.length) {
+                actors[id] = movedActor;
+            }
             const privateActor = actor;
             privateActor.game = null;
             privateActor.actorId = null;
-            const movedActor = actors[id];
             movedActor.actorId = id;
         };
         const frame = game;

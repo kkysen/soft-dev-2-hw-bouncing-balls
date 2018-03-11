@@ -1,19 +1,32 @@
-Object.defineProperties(Object.prototype, {
-    freeze: {
+Object.defineProperties(Object, {
+    defineSharedProperties: {
         writable: false,
         enumerable: false,
         configurable: false,
-        value: function () {
-            return Object.freeze(this);
+        value(obj, sharedDescriptor, propertyValues) {
+            const properties = {};
+            for (const value in propertyValues) {
+                if (propertyValues.hasOwnProperty(value)) {
+                    properties[value] = Object.assign({ value: propertyValues[value] }, sharedDescriptor);
+                }
+            }
+            Object.defineProperties(obj, properties);
         },
     },
-    seal: {
-        writable: false,
-        enumerable: false,
-        configurable: false,
-        value() {
-            return Object.seal(this);
-        },
+});
+Object.defineSharedProperties(Object.prototype, {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+}, {
+    freeze() {
+        return Object.freeze(this);
+    },
+    seal() {
+        return Object.seal(this);
+    },
+    _clone() {
+        return Object.assign({}, this);
     },
 });
 Element.prototype.clearHTML = function () {

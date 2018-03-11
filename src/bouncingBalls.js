@@ -25,13 +25,13 @@ exports.BouncingBall = {
         const minBounceInterval = options.minBounceInterval | 0;
         const radius = +options.radius();
         const dist2 = function (ball1, ball2) {
-            "use asm";
+            // "use asm";
             const dx = +ball1.x - +ball2.x;
             const dy = +ball1.y - +ball2.y;
             return dx * dx + dy * dy;
         };
         const collide = function (game) {
-            "use asm";
+            // "use asm";
             const balls = game.balls;
             for (let i = ball.ballId | 0; i < (balls.length | 0); i++) {
                 const otherBall = balls[i];
@@ -43,7 +43,7 @@ exports.BouncingBall = {
             }
         };
         const move = function (game) {
-            "use asm";
+            // "use asm";
             const canvas = game.canvas;
             const width = +canvas.width;
             const height = +canvas.height;
@@ -132,6 +132,7 @@ exports.BouncingBall = {
 }.freeze();
 exports.BouncingBallsGame = {
     new(options) {
+        options = options._clone();
         const parent = options.parent.appendNewElement("center");
         const canvasDiv = parent.appendDiv();
         canvasDiv.appendNewElement("h4").innerText = options.name;
@@ -150,36 +151,56 @@ exports.BouncingBallsGame = {
                 velocity: options.ballVelocity,
             });
         };
+        const overrideRemove = function (ball) {
+            const superRemove = ball.remove;
+            ball.remove = function () {
+                superRemove();
+                const id = ball.ballId;
+                const movedBall = balls.pop();
+                if (id !== balls.length) {
+                    balls[id] = movedBall;
+                }
+                movedBall.ballId = id;
+                ball.ballId = null;
+            };
+        };
         const balls = new Array(options.numBalls)
             .fill(null)
             .map((e, i) => newBall(i));
         game.balls = balls;
         balls.forEach(game.addActor);
-        balls.forEach(ball => {
-            // override remove()
-            const superRemove = ball.remove;
-            ball.remove = function () {
-                superRemove();
-                const id = ball.ballId;
-                const movedBall = balls[id] = balls.pop();
-                movedBall.ballId = id;
-                ball.ballId = null;
-            };
-        });
+        balls.forEach(overrideRemove);
         game.addBall = listener_1.Listener.new(() => {
-            balls.push(newBall(balls.length));
+            console.log("adding ball");
+            const ball = newBall(balls.length);
+            game.addActor(ball);
+            overrideRemove(ball);
+            balls.push(ball);
         });
         game.addBall.click(game.canvas);
+        const superReset = game.reset;
+        game.reset = game_1.GameAction.new(() => {
+            // console.log(balls.slice(options.numBalls, balls.length));
+            balls.slice(options.numBalls, balls.length)
+                .reverse() // remove from back
+                .forEach(ball => ball.remove());
+            superReset();
+        });
+        game.canvas.appendTo(canvasDiv);
         parent.appendChild(game.start.button.withInnerText("Start"));
         parent.appendChild(game.stop.button.withInnerText("Pause"));
         parent.appendChild(game.resume.button.withInnerText("Resume"));
         parent.appendChild(game.restart.button.withInnerText("Restart"));
         return game;
     },
-    default() {
+    default(numBalls) {
+        const radius = 10;
         const size = { x: 600, y: 600 };
-        const randomVector = function (vector) {
-            return { x: Math.random() * vector.x, y: Math.random() * vector.y };
+        const randomVector = function (vector, radius) {
+            return {
+                x: utils_1.MathUtils.randomRange(radius, radius + vector.x),
+                y: utils_1.MathUtils.randomRange(radius, radius + vector.y),
+            };
         };
         const velocity = function (speed, angle) {
             return { x: speed * Math.cos(angle), y: speed * Math.sin(angle) };
@@ -189,10 +210,17 @@ exports.BouncingBallsGame = {
             name: "Bouncing Balls",
             parent: document.body.appendNewElement("div"),
             gameSize: size,
-            numBalls: 10,
-            ballRadius: () => 50,
-            ballPosition: randomVector.bind(size),
+            numBalls: numBalls || 10,
+            ballRadius: () => radius,
+            ballPosition: randomVector.bind(null, size, radius),
             ballVelocity: () => velocity(10, Math.random() * utils_1.MathUtils.TAU),
         });
+    },
+    main() {
+        let numBalls = parseInt(utils_1.queryParams().get("numBalls"));
+        if (!numBalls || numBalls < 0) {
+            numBalls = undefined;
+        }
+        exports.BouncingBallsGame.default(numBalls).start();
     },
 }.freeze();

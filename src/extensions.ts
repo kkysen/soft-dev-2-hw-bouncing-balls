@@ -4,7 +4,8 @@ declare interface Object {
     
     seal<T>(this: T): T;
     
-    clone<T>(this: T): T;
+    // _ is b/c there are other objects with slightly different clone methods
+    _clone<T>(this: T): T;
     
 }
 
@@ -47,7 +48,7 @@ Object.defineSharedProperties(Object.prototype, {
         return Object.seal(this);
     },
     
-    clone() {
+    _clone() {
         return Object.assign({}, this);
     },
     
